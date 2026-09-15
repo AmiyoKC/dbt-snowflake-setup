@@ -1,0 +1,14 @@
+version: 2
+
+sources:
+  - name: raw
+    database: dbt_bootcamp
+    schema: dbt_amiyo
+    tables:
+      - name: raw_customers
+        description: "Customer signup data"
+        config:
+          loaded_at_field: loaded_at
+          freshness:
+            warn_after: {count: 7, period: day}
+            error_after: {count: 14, period: day}
