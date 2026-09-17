@@ -1,12 +1,55 @@
-name: Hello World
+name: dbt CI
 
 on:
   pull_request:
     branches: [main]
 
 jobs:
-  say-hello:
+  dbt-build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: learn
+
     steps:
-      - name: Print a message
-        run: echo "Hello from GitHub Actions!"
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Write Snowflake private key to a file
+        run: |
+          mkdir -p ~/.snowflake-keys
+          echo "${{ secrets.SNOWFLAKE_PRIVATE_KEY }}" > ~/.snowflake-keys/rsa_key.p8
+
+      - name: Create profiles.yml
+        run: |
+          mkdir -p ~/.dbt
+          cat << EOF > ~/.dbt/profiles.yml
+          learn:
+            outputs:
+              dev:
+                type: snowflake
+                account: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+                user: ${{ secrets.SNOWFLAKE_USER }}
+                role: ${{ secrets.SNOWFLAKE_ROLE }}
+                database: ${{ secrets.SNOWFLAKE_DATABASE }}
+                warehouse: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
+                schema: ${{ secrets.SNOWFLAKE_SCHEMA }}
+                authenticator: snowflake_jwt
+                private_key_path: /home/runner/.snowflake-keys/rsa_key.p8
+                threads: 4
+            target: dev
+          EOF
+
+      - name: Install dbt packages
+        run: dbt deps
+
+      - name: dbt build
+        run: dbt build
