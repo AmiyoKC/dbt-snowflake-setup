@@ -1,3 +1,6 @@
+# This is not currently being used, the source in stg_customers has been changed to ref. 
+# Note: The schema is hardcoded in this and not environment aware
+
 version: 2
 
 sources:
