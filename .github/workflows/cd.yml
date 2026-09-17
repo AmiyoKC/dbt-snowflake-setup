@@ -3,6 +3,8 @@ name: dbt CD
 on:
   push:
     branches: [main]
+  schedule:
+    - cron: '30 15 * * *'   # 9:00 PM IST daily
 
 jobs:
   dbt-deploy:
