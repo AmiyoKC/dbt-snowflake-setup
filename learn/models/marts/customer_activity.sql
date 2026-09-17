@@ -9,7 +9,8 @@ select
     customer_id,
     customer_name,
     email,
-    signup_date
+    signup_date,
+    current_timestamp() as as_at
 from {{ ref('stg_customers') }}
 
 {% if is_incremental() %}
