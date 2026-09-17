@@ -5,6 +5,7 @@ on:
     branches: [main]
   schedule:
     - cron: '30 15 * * *'   # 9:00 PM IST daily
+  workflow_dispatch:
 
 jobs:
   dbt-deploy:
