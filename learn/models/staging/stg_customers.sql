@@ -3,4 +3,4 @@ name as customer_name,
 email,
 signup_date,
 current_timestamp() as as_at 
-from {{ source('raw', 'raw_customers') }}
+from {{ ref('raw_customers') }}
